@@ -92,7 +92,6 @@ contract lendingProtocol is
     }
 
     constructor() {
-        _disableInitializers();
     }
 
     function initialize(string memory _uri, address _admin) public initializer {
