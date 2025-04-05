@@ -17,7 +17,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./interfaces/IMyERC1155.sol";
-
+import "./interfaces/ILendingProtocol.sol";
+import "./interfaces/IPermit.sol";
 
 
 // 1155 metadata
@@ -28,90 +29,25 @@ import "./interfaces/IMyERC1155.sol";
 // 哪天借
 // 哪天還
 
-/// @dev Minimal interface for ERC721 Permit (EIP-4494)
-interface IERC721Permit {
-    function permit(
-        address spender,
-        uint256 tokenId,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
-}
 
-/// @dev Custom interface for ERC1155 Permit (non-standard)
-interface IERC1155Permit {
-    function permit(
-        address owner,
-        address operator,
-        uint256 tokenId,
-        uint256 amount,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
-}
 
 /// @title DerivativeLoan
 /// @notice A simplified derivative loan contract that allows borrowers to deposit a basket of collateral (ERC20, ERC721, ERC1155)
 /// as security for a loan in accepted stablecoins. Only whitelisted lenders can fund loans.
 /// When a loan is funded, an ERC1155 loan note is minted to the lender, which can later be redeemed to withdraw the
 /// principal and interest.
-contract DerivativeLoan is 
+contract lendingProtocol is 
         Initializable,
         ERC1155Upgradeable,
         AccessControlUpgradeable,
         UUPSUpgradeable,
-        EIP712Upgradeable
+        EIP712Upgradeable,
+        ILendingProtocol
     {
     using SafeERC20 for IERC20;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
-
-    /// @dev Enum to represent asset types.
-    enum AssetType { ERC20, ERC721, ERC1155 }
-
-    /// @dev Struct representing a single collateral asset.
-    struct CollateralAsset {
-        AssetType assetType;
-        address assetAddress;
-        uint256 tokenId; // For ERC721 and ERC1155; ignored for ERC20.
-        uint256 amount;  // For ERC20 and ERC1155; for ERC721, always 1.
-    }
-
-    /// @dev Structure representing permit data for collateral assets.
-    /// For ERC20: 'value' represents the amount; for ERC721: 'value' is ignored; for ERC1155: 'value' represents the amount.
-    struct PermitData {
-        AssetType assetType;
-        uint256 value;
-        uint256 deadline;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-    }
-
-    /// @dev Enum to represent loan status.
-    enum LoanStatus { Requested, Funded, Repaid, Defaulted }
-
-    /// @dev Struct for loan details.
-    struct Loan {
-        uint256 loanId;
-        address borrower;
-        address stablecoin; // The stablecoin used for the loan.
-        uint256 loanAmount; // Principal amount.
-        uint256 interestRate; // e.g., percentage (for simplicity)
-        uint256 duration;   // Loan duration in seconds.
-        uint256 startTime;  // Time when the loan is funded.
-        LoanStatus status;
-        CollateralAsset[] collateralAssets; // Basket of collateral.
-        address lender; // The lender who funds the loan.
-        uint256 repaymentAmount; // Total amount repaid (principal + interest)
-        bool withdrawn; // Whether lender has redeemed funds.
-        uint256 inquiryDeadline; // Timestamp until which lender offers are accepted.
-    }
 
     uint256 public nextLoanId;
     mapping(uint256 => Loan) public loans;
@@ -226,15 +162,6 @@ contract DerivativeLoan is
     }
 
     /// @notice Borrower initiates a loan request by depositing collateral using permit where available.
-    /// For ERC20, ERC721, and ERC1155 (if supported) collateral, permit is used to authorize the transfer.
-    /// @param stablecoin The stablecoin address.
-    /// @param loanAmount The loan principal amount.
-    /// @param interestRate The interest rate (percentage).
-    /// @param duration The loan duration.
-    /// @param inquiryDuration The inquiry period duration in seconds.
-    /// @param collateralAssets An array of collateral assets provided.
-    /// @param permits An array of permit data corresponding to each collateral asset.
-    /// The length of `collateralAssets` must equal the length of `permits`.
     function requestLoanWithPermit(
         address stablecoin,
         uint256 loanAmount,
@@ -248,57 +175,24 @@ contract DerivativeLoan is
         require(acceptedStablecoins[stablecoin], "Stablecoin not accepted");
         require(loanAmount > 0, "Loan amount must be > 0");
 
-        // For each collateral asset, if permit data is provided and asset supports permit, call permit first.
         for (uint i = 0; i < collateralAssets.length; i++) {
             CollateralAsset calldata asset = collateralAssets[i];
             PermitData calldata pd = permits[i];
             require(asset.assetType == pd.assetType, "Asset type mismatch in permit data");
 
-            if (asset.assetType == AssetType.ERC20) {
-                // ERC20 permit (EIP-2612)
-                IERC20Permit(asset.assetAddress).permit(
-                    msg.sender,
-                    address(this),
-                    pd.value,
-                    pd.deadline,
-                    pd.v,
-                    pd.r,
-                    pd.s
-                );
-            } else if (asset.assetType == AssetType.ERC721) {
-                // ERC721 permit (EIP-4494)
-                IERC721Permit(asset.assetAddress).permit(
-                    address(this),
-                    asset.tokenId,
-                    pd.deadline,
-                    pd.v,
-                    pd.r,
-                    pd.s
-                );
-            } else if (asset.assetType == AssetType.ERC1155) {
-                // ERC1155 permit (custom implementation)
-                IERC1155Permit(asset.assetAddress).permit(
-                    msg.sender,
-                    address(this),
-                    asset.tokenId,
-                    asset.amount,
-                    pd.deadline,
-                    pd.v,
-                    pd.r,
-                    pd.s
-                );
-            }
-            // After permit (or if no permit), transfer collateral asset from borrower to contract.
+            // Execute permit for the collateral asset.
+            _executePermit(asset, pd, msg.sender);
+
+            // After permit, transfer collateral asset from borrower to contract.
             if (asset.assetType == AssetType.ERC20) {
                 IERC20(asset.assetAddress).safeTransferFrom(msg.sender, address(this), asset.amount);
             } else if (asset.assetType == AssetType.ERC721) {
                 IERC721(asset.assetAddress).transferFrom(msg.sender, address(this), asset.tokenId);
-            } else if (asset.assetType == AssetType.ERC1155) {
+          } else if (asset.assetType == AssetType.ERC1155) {
                 IERC1155(asset.assetAddress).safeTransferFrom(msg.sender, address(this), asset.tokenId, asset.amount, "");
             }
         }
 
-        // Create loan record.
         Loan storage loan = loans[nextLoanId];
         loan.loanId = nextLoanId;
         loan.borrower = msg.sender;
@@ -348,6 +242,39 @@ contract DerivativeLoan is
     function fundLoan(uint256 loanId) external onlyWhitelistedLender {
         Loan storage loan = loans[loanId];
         require(loan.status == LoanStatus.Requested, "Loan not available for funding");
+
+        // Transfer stablecoin from lender to contract.
+        IERC20(loan.stablecoin).safeTransferFrom(msg.sender, address(this), loan.loanAmount);
+
+        // Forward stablecoin to borrower.
+        IERC20(loan.stablecoin).safeTransfer(loan.borrower, loan.loanAmount);
+        loan.lender = msg.sender;
+        loan.startTime = block.timestamp;
+        loan.status = LoanStatus.Funded;
+        emit LoanFunded(loanId, msg.sender);
+
+        // Mint 1 unit of ERC1155 loan note for this loan to the lender.
+        _mint(msg.sender, loanId, loan.loanAmount, "");
+    }
+
+    function fundLoanWithPermit(
+        uint256 loanId,
+        PermitData calldata permit
+    ) external onlyWhitelistedLender {
+        Loan storage loan = loans[loanId];
+        require(loan.status == LoanStatus.Requested, "Loan not available for funding");
+        require(loan.loanAmount > 0, "Loan amount must be > 0");
+
+        // Execute permit for the stablecoin.
+        IERC20Permit(loan.stablecoin).permit(
+            msg.sender,
+            address(this),
+            permit.value,
+            permit.deadline,
+            permit.v,
+            permit.r,
+            permit.s
+        );
 
         // Transfer stablecoin from lender to contract.
         IERC20(loan.stablecoin).safeTransferFrom(msg.sender, address(this), loan.loanAmount);
@@ -440,6 +367,42 @@ contract DerivativeLoan is
         }
     }
 
+    function liquidateLoanWithPermit(
+        uint256 loanId,
+        PermitData calldata permit
+    ) external {
+        Loan storage loan = loans[loanId];
+        require(loan.status == LoanStatus.Funded, "Loan not active");
+        require(block.timestamp > loan.startTime + loan.duration + 3 days, "Loan not defaulted yet");
+        require(msg.sender == loan.lender, "Not the lender");
+
+        // Execute permit for the stablecoin.
+        IERC20Permit(loan.stablecoin).permit(
+            msg.sender,
+            address(this),
+            permit.value,
+            permit.deadline,
+            permit.v,
+            permit.r,
+            permit.s
+        );
+
+        // Transfer stablecoin from lender to contract.
+        IERC20(loan.stablecoin).safeTransferFrom(msg.sender, address(this), loan.repaymentAmount);
+
+        // Transfer collateral to lender.
+        for (uint i = 0; i < loan.collateralAssets.length; i++) {
+            CollateralAsset storage asset = loan.collateralAssets[i];
+            if (asset.assetType == AssetType.ERC20) {
+                IERC20(asset.assetAddress).safeTransfer(loan.lender, asset.amount);
+            } else if (asset.assetType == AssetType.ERC721) {
+                IERC721(asset.assetAddress).transferFrom(address(this), loan.lender, asset.tokenId);
+            } else if (asset.assetType == AssetType.ERC1155) {
+                IERC1155(asset.assetAddress).safeTransferFrom(address(this), loan.lender, asset.tokenId, asset.amount, "");
+            }
+        }
+    }
+
     // get loan details
     function getLoanDetails(uint256 loanId) external view returns (Loan memory) {
         return loans[loanId];
@@ -466,7 +429,7 @@ contract DerivativeLoan is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC1155Upgradeable, AccessControlUpgradeable)
+        override(ERC1155Upgradeable, AccessControlUpgradeable, ILendingProtocol)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
@@ -480,4 +443,51 @@ contract DerivativeLoan is
         override
         onlyRole(UPGRADER_ROLE)
     {}
+    
+    /**
+     * @dev Internal function to execute permit for a given collateral asset.
+     * @param asset The collateral asset.
+     * @param pd The corresponding permit data.
+     * @param user The address from which permission is obtained.
+     */
+    function _executePermit(
+        CollateralAsset calldata asset,
+        PermitData calldata pd,
+        address user
+    ) internal {
+        if (asset.assetType == AssetType.ERC20) {
+            // ERC20 Permit (EIP-2612)
+            IERC20Permit(asset.assetAddress).permit(
+                user,
+                address(this),
+                pd.value,
+                pd.deadline,
+                pd.v,
+                pd.r,
+                pd.s
+            );
+        } else if (asset.assetType == AssetType.ERC721) {
+            // ERC721 Permit (EIP-4494)
+            IPermit(asset.assetAddress).permit(
+                address(this),
+                asset.tokenId,
+                pd.deadline,
+                pd.v,
+                pd.r,
+                pd.s
+            );
+        } else if (asset.assetType == AssetType.ERC1155) {
+            // ERC1155 Permit (custom implementation)
+            IPermit(asset.assetAddress).permit(
+                user,
+                address(this),
+                asset.tokenId,
+                asset.amount,
+                pd.deadline,
+                pd.v,
+                pd.r,
+                pd.s
+            );
+        }
+    }
 }

@@ -8,19 +8,13 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "./interfaces/IMyERC1155.sol";
+import "./interfaces/ILendingProtocol.sol";
 
 /**
  * Upgradeable ERC-1155 Token with Permit functionality.
  * Uses UUPS Proxy pattern and allows setting approval for all via off-chain signature.
  */
-contract MyToken1155 is 
-    Initializable,
-    ERC1155Upgradeable,
-    AccessControlUpgradeable,
-    UUPSUpgradeable,
-    EIP712Upgradeable,
-    IMyERC1155
+contract MyERC1155 is Initializable, ERC1155Upgradeable,AccessControlUpgradeable,UUPSUpgradeable, EIP712Upgradeable
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");

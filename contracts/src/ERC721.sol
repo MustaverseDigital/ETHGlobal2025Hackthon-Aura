@@ -15,7 +15,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
  * allowing token owners to authorize spenders for a specific tokenId via off-chain signatures.
  * It also supports UUPS upgrades and access control.
  */
-contract ERC721PermitUpgradeable is Initializable, ERC721Upgradeable, EIP712Upgradeable, UUPSUpgradeable, AccessControlUpgradeable {
+contract MyERC721 is Initializable, ERC721Upgradeable, EIP712Upgradeable, UUPSUpgradeable, AccessControlUpgradeable {
     // Role for upgrade authorization
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     // Role for minting tokens
@@ -25,7 +25,7 @@ contract ERC721PermitUpgradeable is Initializable, ERC721Upgradeable, EIP712Upgr
     mapping(uint256 => uint256) private _nonces;
 
     // URI for the ERC721 metadata
-    string private _tokenURI;
+    mapping(uint256 => string) private _tokenURI;
 
     // Permit struct typehash
     // keccak256("Permit(address spender,uint256 tokenId,uint256 nonce,uint256 deadline)")
@@ -140,7 +140,7 @@ contract ERC721PermitUpgradeable is Initializable, ERC721Upgradeable, EIP712Upgr
      * @dev Override tokenURI to return the stored token URI.
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        return _tokenURI;
+        return _tokenURI[tokenId];
     }
 
     /**
@@ -148,7 +148,7 @@ contract ERC721PermitUpgradeable is Initializable, ERC721Upgradeable, EIP712Upgr
      * Only callable by the DEFAULT_ADMIN_ROLE.
      * @param tokenURI_ The new token URI.
      */
-    function setTokenURI(string memory tokenURI_) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _tokenURI = tokenURI_;
+    function setTokenURI(uint256 tokenId, string memory tokenURI_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _tokenURI[tokenId] = tokenURI_;
     }
 }

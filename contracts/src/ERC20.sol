@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract USDCUpgradeable is Initializable, ERC20Upgradeable, UUPSUpgradeable, AccessControlUpgradeable {
+contract MyERC20 is Initializable, ERC20Upgradeable, UUPSUpgradeable, AccessControlUpgradeable {
     // Define an upgrade role for controlling contract upgrades.
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
