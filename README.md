@@ -20,15 +20,15 @@ To enhance efficiency and reduce gas costs, our system integrates off-chain perm
 - **Fixed-Income Loan Notes:**  
   Lenders receive bond-like fixed-income loan notes. Their market price fluctuates with the yield spread between fixed returns and market interest rates.
 
-- **Off-Chain Permit Approvals:**  
-  Integrated permit functionality for ERC20, ERC721, and ERC1155 tokens enables gas-efficient, seamless authorization via digital signatures.
-
 - **Nationality Verification:**  
   Self Protocol is employed to verify borrower nationality, ensuring that only eligible parties can participate in the system, thus meeting regulatory requirements.
 
 - **AI Agent Valuation:**  
   An AI Agent provides real-time valuation of diamond assets, enhancing transparency and enabling more informed lending and investment decisions.
-
+  
+- **Off-Chain Permit Approvals:**  
+  Integrated permit functionality for ERC20, ERC721, and ERC1155 tokens enables gas-efficient, seamless authorization via digital signatures.
+  
 ## How It Works
 
 1. **Asset Fractionalization:**  
@@ -40,14 +40,14 @@ To enhance efficiency and reduce gas costs, our system integrates off-chain perm
 3. **Yield Spread Trading:**  
    The market price of the loan notes fluctuates due to the yield spread between their fixed returns and current market interest rates.
 
-4. **Off-Chain Permits:**  
-   The system uses off-chain permit functionality for ERC20, ERC721, and ERC1155 tokens, allowing users to authorize transactions via digital signatures without extra on-chain approval transactions.
-
-5. **Regulatory Compliance:**  
+4. **Regulatory Compliance:**  
    Self Protocol is used to verify borrower nationality, ensuring the platform complies with RWA legal and regulatory standards.
 
-6. **AI Agent Valuation:**  
+5. **AI Agent Valuation:**  
    An AI Agent, powered by a large language model (LLM), provides real-time diamond asset valuations.
+
+6. **Off-Chain Permits:**  
+   The system uses off-chain permit functionality for ERC20, ERC721, and ERC1155 tokens, allowing users to authorize transactions via digital signatures without extra on-chain approval transactions.
 
 ## Deployment
 
