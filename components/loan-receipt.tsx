@@ -213,46 +213,34 @@ export default function LoanReceipt({ gemId }: { gemId: number }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowAnimation(false)
-    }, 3000)
+    }, 12000)
 
     return () => clearTimeout(timer)
   }, [])
 
   if (showAnimation) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh]">
-        <motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{
-            scale: [0.5, 1.2, 1],
-            opacity: [0, 1, 1],
-            rotate: [0, 10, -10, 0],
-          }}
-          transition={{ duration: 2 }}
-          className="w-32 h-32"
-        >
-          <iframe
-            src={gem.modelUrl}
-            className="w-full h-full border-0 rounded-lg"
-            title={`3D model of ${gem.name}`}
+      <main className="flex min-h-screen flex-col items-center bg-gradient-to-br from-emerald-900 to-black">
+        <div className="w-full max-w-2xl">
+          <h1 className="text-3xl font-bold text-center text-white my-8">Loan Receipt</h1>
+        </div>
+        <div className="fixed inset-0 bg-black">
+          <video
+            src="/card_animation_web.mp4"
+            autoPlay
+            muted
+            className="w-full h-full object-cover"
+            onEnded={() => setShowAnimation(false)}
           />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-          className="text-white text-xl font-medium text-center"
-        >
-          Pledge successful! Generating receipt...
-        </motion.div>
-      </div>
+        </div>
+      </main>
     )
   }
 
   return (
     <>
       <Card className="bg-white/10 backdrop-blur-md border-emerald-500/30 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+        <div className="absolute top-0 left-0 h-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
 
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -302,7 +290,7 @@ export default function LoanReceipt({ gemId }: { gemId: number }) {
             </div>
           </div>
 
-          <div className="rounded-md bg-gray-800/50 p-4 border border-gray-700">
+          <div className="rounded-md bg-gray-800/50 border border-gray-700">
             <h4 className="text-sm font-medium text-white mb-2">Lending Terms & Conditions</h4>
             <ul className="text-xs text-gray-300 space-y-1">
               <li>• Collateral may be liquidated if loan is not repaid by the maturity date</li>
