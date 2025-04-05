@@ -26,6 +26,9 @@ To enhance efficiency and reduce gas costs, our system integrates off-chain perm
 - **Nationality Verification:**  
   Self Protocol is employed to verify borrower nationality, ensuring that only eligible parties can participate in the system, thus meeting regulatory requirements.
 
+- **AI Agent Valuation:**  
+  An AI Agent provides real-time valuation of diamond assets, enhancing transparency and enabling more informed lending and investment decisions.
+
 ## How It Works
 
 1. **Asset Fractionalization:**  
@@ -44,7 +47,7 @@ To enhance efficiency and reduce gas costs, our system integrates off-chain perm
    Self Protocol is used to verify borrower nationality, ensuring the platform complies with RWA legal and regulatory standards.
 
 6. **AI Agent Valuation:**  
-   An AI Agent provides real-time valuation of diamond assets, enhancing transparency and enabling more informed lending and investment decisions.
+   An AI Agent, powered by a large language model (LLM), provides real-time diamond asset valuations.
 
 ## Deployment
 
