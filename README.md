@@ -6,7 +6,7 @@
 
 Our project addresses the liquidity challenges of diamond real-world assets by fractionalizing high-value diamonds into tradable tokens. Borrowers can secure loans using these diamond fractions as collateral, while lenders receive fixed-income loan notes—similar to bonds—whose market price fluctuates with changes in interest rate spreads. These fluctuations, resulting from the yield spread between fixed returns and prevailing market interest rates, mimic traditional bond trading dynamics.
 
-To enhance efficiency and reduce gas costs, our system integrates off-chain permit functionalities for ERC20, ERC721, and ERC1155 tokens. This allows seamless authorization via digital signatures without requiring multiple on-chain approval transactions. Furthermore, to meet legal and regulatory requirements for real-world assets (RWA), we utilize Self Protocol to verify borrower nationality. 
+To enhance efficiency and reduce gas costs, our system integrates off-chain permit functionalities for ERC20, ERC721, and ERC1155 tokens, allowing seamless authorization via digital signatures without requiring multiple on-chain approval transactions. Furthermore, to meet legal and regulatory requirements for real-world assets (RWA), we utilize Self Protocol to verify borrower nationality. In addition, the protocol employs an AI Agent to provide real-time valuation of diamond assets, further enhancing transparency and enabling informed decision-making.
 
 ## Features
 
@@ -38,6 +38,9 @@ To enhance efficiency and reduce gas costs, our system integrates off-chain perm
 
 5. **Regulatory Compliance:**  
    Self Protocol is used to verify borrower nationality, ensuring the platform complies with RWA legal and regulatory standards.
+
+6. **AI Agent Valuation:**  
+   An AI Agent provides real-time valuation of diamond assets, enhancing transparency and enabling more informed lending and investment decisions.
 
 ## Deployment
 
