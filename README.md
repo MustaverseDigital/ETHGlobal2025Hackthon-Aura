@@ -2,6 +2,9 @@
 
 **Unlock diamond liquidity via fractionalized RWA lending with fixed-income bond-like notes, off-chain permit approvals, and borrower nationality verification via Self Protocol.**
 
+For more detail, please check the online [deck](https://www.canva.com/design/DAGjo0nQSWQ/FWqWFWaDyaq1W58efsReEg/view?utm_content=DAGjo0nQSWQ&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9050e59926)
+
+
 ## Overview
 
 Our project addresses the liquidity challenges of diamond real-world assets by fractionalizing high-value diamonds into tradable tokens. Borrowers can secure loans using these diamond fractions as collateral, while lenders receive fixed-income loan notes—similar to bonds—whose market price fluctuates with changes in interest rate spreads. These fluctuations, resulting from the yield spread between fixed returns and prevailing market interest rates, mimic traditional bond trading dynamics.
