@@ -114,6 +114,10 @@ contract MyERC721 is Initializable, ERC721Upgradeable, EIP712Upgradeable, UUPSUp
         _safeMint(to, tokenId);
     }
 
+    function getCurrentTokenId() public view returns (uint256) {
+        return _tokenIdCounter;
+    }
+
     /**
      * @dev UUPS upgrade authorization function.
      * Only addresses with the UPGRADER_ROLE can authorize an upgrade.
