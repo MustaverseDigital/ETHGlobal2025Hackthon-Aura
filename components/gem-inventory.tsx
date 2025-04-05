@@ -82,7 +82,8 @@ export default function GemInventory() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <Card className="bg-white/10 backdrop-blur-md border-emerald-500/30">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Current Lending Rates</CardTitle>
+            <CardTitle className="text-white text-lg">Current Collateral Rates</CardTitle>
+            <CardDescription className="text-emerald-300">Maximum loan-to-value ratio: 70%</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -92,7 +93,10 @@ export default function GemInventory() {
                     <div className={`w-3 h-3 rounded-full ${gem.color} mr-2`}></div>
                     <span className="text-white">{gem.name}</span>
                   </div>
-                  <span className="text-emerald-300">{(gem.rate * 100).toFixed(2)}%</span>
+                  <div className="flex items-center">
+                    <span className="text-emerald-300 font-medium">{(gem.rate * 100).toFixed(2)}% APR</span>
+                    <span className="text-gray-400 text-xs ml-2">LTV 70%</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -116,7 +120,11 @@ export default function GemInventory() {
                   {(gem.rate * 100).toFixed(2)}% APR
                 </Badge>
               </div>
-              <CardDescription className="text-emerald-300">Valuation: {gem.value} ETH</CardDescription>
+              <CardDescription className="text-emerald-300">
+                <div className="flex justify-between items-center">
+                  <span>Value: {gem.value} ETH</span>
+                </div>
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center pb-2">
               <div className={`w-24 h-24 rounded-lg ${gem.color} flex items-center justify-center`}>
@@ -153,19 +161,50 @@ export default function GemInventory() {
           <DialogHeader>
             <DialogTitle>Confirm Pledge</DialogTitle>
             <DialogDescription className="text-gray-300">
-              You are about to pledge the following gem to get a loan
+              Review the lending terms before confirming your pledge
             </DialogDescription>
           </DialogHeader>
 
           {selectedGem && (
-            <div className="flex items-center space-x-4 py-4">
-              <div className={`w-16 h-16 rounded-lg ${selectedGem.color} flex items-center justify-center`}>
-                <span className="text-2xl">💎</span>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4 py-4">
+                <div className={`w-16 h-16 rounded-lg ${selectedGem.color} flex items-center justify-center`}>
+                  <span className="text-2xl">💎</span>
+                </div>
+                <div>
+                  <h3 className="font-medium">{selectedGem.name}</h3>
+                  <p className="text-sm text-gray-300">Asset ID: #{selectedGem.id}</p>
+                  <p className="text-sm text-emerald-300">Collection: Premium Gems</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-medium">{selectedGem.name}</h3>
-                <p className="text-sm text-gray-300">Valuation: {selectedGem.value} ETH</p>
-                <p className="text-sm text-emerald-300">Interest Rate: {(selectedGem.rate * 100).toFixed(2)}% APR</p>
+
+              <div className="grid grid-cols-2 gap-4 bg-black/20 p-4 rounded-lg">
+                <div>
+                  <p className="text-sm text-gray-400">Asset Value</p>
+                  <p className="text-lg font-medium text-white">{selectedGem.value} ETH</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Interest Rate</p>
+                  <p className="text-lg font-medium text-emerald-300">{(selectedGem.rate * 100).toFixed(2)}% APR</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Loan-to-Value</p>
+                  <p className="text-lg font-medium text-white">70%</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Max Loan Amount</p>
+                  <p className="text-lg font-medium text-emerald-300">{(selectedGem.value * 0.7).toFixed(2)} ETH</p>
+                </div>
+              </div>
+
+              <div className="bg-black/20 p-4 rounded-lg">
+                <h4 className="text-sm font-medium text-white mb-2">Lending Terms</h4>
+                <ul className="text-xs text-gray-300 space-y-1">
+                  <li>• Loan Duration: 30 days</li>
+                  <li>• Repayment Schedule: Full amount at maturity</li>
+                  <li>• Early Repayment: Allowed with no penalties</li>
+                  <li>• Liquidation Threshold: 85% of initial value</li>
+                </ul>
               </div>
             </div>
           )}

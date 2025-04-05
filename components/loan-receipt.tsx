@@ -157,12 +157,12 @@ export default function LoanReceipt({ gemId }: { gemId: number }) {
           </div>
 
           <div className="rounded-md bg-gray-800/50 p-4 border border-gray-700">
-            <h4 className="text-sm font-medium text-white mb-2">Loan Terms</h4>
+            <h4 className="text-sm font-medium text-white mb-2">Lending Terms & Conditions</h4>
             <ul className="text-xs text-gray-300 space-y-1">
-              <li>• Collateral will be auctioned if not repaid by liquidation date</li>
-              <li>• No additional fees for early repayment</li>
-              <li>• Additional collateral can be added at any time during the loan period</li>
-              <li>• Market fluctuations may trigger early liquidation</li>
+              <li>• Collateral may be liquidated if loan is not repaid by the maturity date</li>
+              <li>• No prepayment penalties for early loan settlement</li>
+              <li>• Additional collateral can be deposited during the loan term</li>
+              <li>• Market volatility may trigger liquidation protocols</li>
             </ul>
           </div>
         </CardContent>

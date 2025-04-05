@@ -10,8 +10,8 @@ const inter = Inter({ subsets: ["latin"] })
 
 // Update metadata
 export const metadata: Metadata = {
-  title: "Gem Lending Platform",
-  description: "Pledge your digital gems for liquidity",
+  title: "GemFi - Real World Asset Lending Platform",
+  description: "Secure DeFi lending platform for tokenized real-world assets, powered by ERC-1155",
   generator: 'v0.dev'
 }
 
