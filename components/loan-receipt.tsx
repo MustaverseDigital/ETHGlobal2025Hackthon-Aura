@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -188,9 +188,13 @@ const gems = [
   }
 ]
 
-export default function LoanReceipt({ gemId }: { gemId: number }) {
+interface LoanReceiptProps {
+  gemId: number
+  showAnimation?: boolean
+}
+
+export default function LoanReceipt({ gemId, showAnimation = true }: LoanReceiptProps) {
   const router = useRouter()
-  const [showAnimation, setShowAnimation] = useState(true)
   const [copied, setCopied] = useState(false)
 
   // Find corresponding gem
@@ -209,125 +213,95 @@ export default function LoanReceipt({ gemId }: { gemId: number }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // Show receipt after animation ends
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowAnimation(false)
-    }, 12000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  if (showAnimation) {
-    return (
-      <main className="flex min-h-screen flex-col items-center bg-gradient-to-br from-emerald-900 to-black">
-        <div className="w-full max-w-2xl">
-          <h1 className="text-3xl font-bold text-center text-white my-8">Loan Receipt</h1>
-        </div>
-        <div className="fixed inset-0 bg-black">
-          <video
-            src="/card_animation_web.mp4"
-            autoPlay
-            muted
-            className="w-full h-full object-cover"
-            onEnded={() => setShowAnimation(false)}
-          />
-        </div>
-      </main>
-    )
-  }
-
   return (
-    <>
-      <Card className="bg-white/10 backdrop-blur-md border-emerald-500/30 overflow-hidden">
-        <div className="absolute top-0 left-0 h-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+    <Card className="bg-white/10 backdrop-blur-md border-emerald-500/30 overflow-hidden">
+      <div className="absolute top-0 left-0 h-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
 
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-white text-xl">Loan Receipt</CardTitle>
-              <CardDescription className="text-emerald-300">Receipt ID: {receiptId}</CardDescription>
-            </div>
-            <Badge variant="outline" className="bg-emerald-900/50 text-emerald-300 border-emerald-500/50">
-              Pledged
-            </Badge>
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-white text-xl">Loan Receipt</CardTitle>
+            <CardDescription className="text-emerald-300">Receipt ID: {receiptId}</CardDescription>
           </div>
-        </CardHeader>
+          <Badge variant="outline" className="bg-emerald-900/50 text-emerald-300 border-emerald-500/50">
+            Pledged
+          </Badge>
+        </div>
+      </CardHeader>
 
-        <CardContent className="space-y-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-32 h-32">
-              <iframe
-                src={gem.modelUrl}
-                className="w-full h-full border-0 rounded-lg"
-                title={`3D model of ${gem.name}`}
-              />
-            </div>
-            <div>
-              <h3 className="font-medium text-white">{gem.name}</h3>
-              <p className="text-sm text-gray-300">Type: {gem.type}</p>
-              <p className="text-sm text-gray-300">Cut: {gem.cut}</p>
-              <p className="text-sm text-gray-300">Valuation: {gem.value} USDC</p>
-            </div>
+      <CardContent>
+        <div className="flex items-center space-x-4">
+          <div className="w-32 h-32">
+            <iframe
+              src={gem.modelUrl}
+              className="w-full h-full border-0 rounded-lg"
+              title={`3D model of ${gem.name}`}
+            />
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <p className="text-xs text-gray-400">Loan Amount</p>
-              <p className="text-lg font-medium text-white">{loanAmount} USDC</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-gray-400">Annual Interest Rate</p>
-              <p className="text-lg font-medium text-emerald-300">{interestRate}%</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-gray-400">Loan Date</p>
-              <p className="text-sm text-white">{loanDate}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-gray-400">Liquidation Date</p>
-              <p className="text-sm text-white">{liquidationDate}</p>
-            </div>
+          <div>
+            <h3 className="font-medium text-white">{gem.name}</h3>
+            <p className="text-sm text-gray-300">Type: {gem.type}</p>
+            <p className="text-sm text-gray-300">Cut: {gem.cut}</p>
+            <p className="text-sm text-gray-300">Valuation: {gem.value} USDC</p>
           </div>
+        </div>
 
-          <div className="rounded-md bg-gray-800/50 border border-gray-700">
-            <h4 className="text-sm font-medium text-white mb-2">Lending Terms & Conditions</h4>
-            <ul className="text-xs text-gray-300 space-y-1">
-              <li>• Collateral may be liquidated if loan is not repaid by the maturity date</li>
-              <li>• No prepayment penalties for early loan settlement</li>
-              <li>• Additional collateral can be deposited during the loan term</li>
-              <li>• Market volatility may trigger liquidation protocols</li>
-            </ul>
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="space-y-1">
+            <p className="text-xs text-gray-400">Loan Amount</p>
+            <p className="text-lg font-medium text-white">{loanAmount} USDC</p>
           </div>
-        </CardContent>
-
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="flex space-x-2 w-full">
-            <Button
-              variant="outline"
-              className="flex-1 border-white/30 text-white hover:bg-white/10"
-              onClick={handleCopy}
-            >
-              {copied ? <CheckCircle2 className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-              {copied ? "Copied" : "Copy Receipt"}
-            </Button>
-            <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700">
-              <Download className="h-4 w-4 mr-2" />
-              Download PDF
-            </Button>
+          <div className="space-y-1">
+            <p className="text-xs text-gray-400">Annual Interest Rate</p>
+            <p className="text-lg font-medium text-emerald-300">{interestRate}%</p>
           </div>
+          <div className="space-y-1">
+            <p className="text-xs text-gray-400">Loan Date</p>
+            <p className="text-sm text-white">{loanDate}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs text-gray-400">Liquidation Date</p>
+            <p className="text-sm text-white">{liquidationDate}</p>
+          </div>
+        </div>
 
+        <div className="mt-6">
+          <h4 className="text-sm font-medium text-white mb-2">Lending Terms & Conditions</h4>
+          <ul className="text-xs text-gray-300 space-y-1">
+            <li>• Collateral may be liquidated if loan is not repaid by the maturity date</li>
+            <li>• No prepayment penalties for early loan settlement</li>
+            <li>• Additional collateral can be deposited during the loan term</li>
+            <li>• Market volatility may trigger liquidation protocols</li>
+          </ul>
+        </div>
+      </CardContent>
+
+      <CardFooter className="flex flex-col space-y-4">
+        <div className="flex space-x-2 w-full">
           <Button
-            variant="ghost"
-            className="w-full text-white hover:bg-white/10"
-            onClick={() => router.push("/inventory")}
+            variant="outline"
+            className="flex-1 border-white/30 text-white hover:bg-white/10"
+            onClick={handleCopy}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Return to Inventory
+            {copied ? <CheckCircle2 className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+            {copied ? "Copied" : "Copy Receipt"}
           </Button>
-        </CardFooter>
-      </Card>
-    </>
+          <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+            <Download className="h-4 w-4 mr-2" />
+            Download PDF
+          </Button>
+        </div>
+
+        <Button
+          variant="ghost"
+          className="w-full text-white hover:bg-white/10"
+          onClick={() => router.push("/inventory")}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Return to Inventory
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
 
