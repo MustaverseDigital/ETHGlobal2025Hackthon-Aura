@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, ArrowLeft } from "lucide-react"
+import { Loader2, ArrowLeft, ChevronRight } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 // 寶石數據
 const gems = [
@@ -68,6 +74,17 @@ export default function GemInventory() {
   const [selectedGem, setSelectedGem] = useState<(typeof gems)[0] | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [isPledging, setIsPledging] = useState(false)
+  const [selectedType, setSelectedType] = useState<string | null>(null)
+
+  // Group gems by type
+  const gemTypes = Array.from(new Set(gems.map(gem => gem.type)))
+  const gemsByType = gemTypes.reduce((acc, type) => {
+    acc[type] = gems.filter(gem => gem.type === type)
+    return acc
+  }, {} as Record<string, typeof gems>)
+
+  // Filter gems by selected type
+  const filteredGems = selectedType ? gems.filter(gem => gem.type === selectedType) : gems
 
   const handlePledge = () => {
     if (!selectedGem) return
@@ -82,88 +99,113 @@ export default function GemInventory() {
   }
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <Card className="bg-white/10 backdrop-blur-md border-emerald-500/30">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Current Collateral Rates</CardTitle>
-            <CardDescription className="text-emerald-300">Maximum loan-to-value ratio: 70%</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {gems.map((gem) => (
-                <div key={gem.id} className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full ${gem.color} mr-2`}></div>
-                    <span className="text-white">{gem.name}</span>
+    <div className="flex">
+      {/* Sidebar */}
+      <div className="w-80 min-h-[calc(100vh-8rem)] bg-black/20 border-r border-emerald-500/30">
+        <div className="p-6">
+          <h2 className="text-lg font-semibold text-white mb-2">Collateral Rates</h2>
+          <p className="text-sm text-emerald-300 mb-6">Maximum loan-to-value ratio: 70%</p>
+          
+          <Accordion type="multiple" defaultValue={gemTypes} className="w-full">
+            {gemTypes.map((type) => (
+              <AccordionItem key={type} value={type} className="border-emerald-500/30">
+                <AccordionTrigger className="text-white hover:text-emerald-300">
+                  {type} Collection
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-4">
+                    {gemsByType[type].map((gem) => (
+                      <div 
+                        key={gem.id} 
+                        className={`flex items-center justify-between group cursor-pointer p-2 rounded-lg transition-colors
+                          ${selectedType === gem.type ? 'bg-emerald-500/20' : 'hover:bg-white/5'}`}
+                        onClick={() => setSelectedType(type === selectedType ? null : type)}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div 
+                            className="w-2 h-2 rounded-full" 
+                            style={{ backgroundColor: gem.color }}
+                          />
+                          <span className="text-sm text-gray-300 group-hover:text-white">
+                            {gem.cut}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-emerald-300">
+                            {(gem.rate * 100).toFixed(2)}% APR
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-emerald-300 font-medium">{(gem.rate * 100).toFixed(2)}% APR</span>
-                    <span className="text-gray-400 text-xs ml-2">LTV 70%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {gems.map((gem) => (
-          <Card
-            key={gem.id}
-            className={`cursor-pointer transition-all duration-200 ${
-              selectedGem?.id === gem.id ? "ring-2 ring-emerald-400 bg-white/20" : "bg-white/10 hover:bg-white/15"
-            } backdrop-blur-md border-emerald-500/30`}
-            onClick={() => setSelectedGem(gem)}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-white">{gem.name}</CardTitle>
-                  <CardDescription className="text-emerald-300">{gem.cut}</CardDescription>
-                </div>
-                <Badge variant="outline" className="bg-emerald-900/50 text-emerald-300 border-emerald-500/50">
-                  {(gem.rate * 100).toFixed(2)}% APR
-                </Badge>
-              </div>
-              <CardDescription className="text-emerald-300">
-                <div className="flex justify-between items-center">
-                  <span>Value: {gem.value} ETH</span>
-                </div>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center pb-2 h-[200px]">
-              <iframe
-                src={gem.modelUrl}
-                className="w-full h-full border-0 rounded-lg"
-                title={`3D model of ${gem.name}`}
-              />
-            </CardContent>
-            <CardFooter>
-              <Button
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setSelectedGem(gem)
-                  setIsConfirmOpen(true)
-                }}
+      {/* Main Content */}
+      <div className="flex-1 p-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredGems.map((gem) => (
+              <Card
+                key={gem.id}
+                className={`cursor-pointer transition-all duration-200 ${
+                  selectedGem?.id === gem.id ? "ring-2 ring-emerald-400 bg-white/20" : "bg-white/10 hover:bg-white/15"
+                } backdrop-blur-md border-emerald-500/30`}
+                onClick={() => setSelectedGem(gem)}
               >
-                Pledge
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-white">{gem.name}</CardTitle>
+                      <CardDescription className="text-emerald-300">{gem.cut}</CardDescription>
+                    </div>
+                    <Badge variant="outline" className="bg-emerald-900/50 text-emerald-300 border-emerald-500/50">
+                      {(gem.rate * 100).toFixed(2)}% APR
+                    </Badge>
+                  </div>
+                  <CardDescription className="text-emerald-300">
+                    <div className="flex justify-between items-center">
+                      <span>Value: {gem.value} ETH</span>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center pb-2 h-[200px]">
+                  <iframe
+                    src={gem.modelUrl}
+                    className="w-full h-full border-0 rounded-lg"
+                    title={`3D model of ${gem.name}`}
+                  />
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    className="w-full bg-emerald-600 hover:bg-emerald-700"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setSelectedGem(gem)
+                      setIsConfirmOpen(true)
+                    }}
+                  >
+                    Pledge
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
 
-      <Button
-        variant="outline"
-        className="mt-8 border-white/30 text-white hover:bg-white/10"
-        onClick={() => router.push("/")}
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Return to Login
-      </Button>
+          <Button
+            variant="outline"
+            className="mt-8 border-white/30 text-white hover:bg-white/10"
+            onClick={() => router.push("/")}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Return to Login
+          </Button>
+        </div>
+      </div>
 
       <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
         <DialogContent className="bg-gray-900 border-emerald-500/30 text-white">
@@ -245,7 +287,7 @@ export default function GemInventory() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   )
 }
 
