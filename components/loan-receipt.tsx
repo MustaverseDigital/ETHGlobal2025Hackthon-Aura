@@ -8,48 +8,184 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Download, Copy, CheckCircle2 } from "lucide-react"
 import { motion } from "framer-motion"
 
-// Mock gem data
+// Gem data
 const gems = [
   {
     id: 1,
-    name: "Ruby",
+    name: "AuraGem #001",
+    type: "Ruby",
+    cut: "Round Brilliant",
     value: 2.5,
     rate: 0.08,
-    image: "/placeholder.svg?height=100&width=100",
-    color: "bg-red-500",
+    color: "#E0115F",
+    thumbnail: "https://i.imgur.com/yKYwm5Y.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=0&color=%23ff87b5"
   },
   {
     id: 2,
-    name: "Sapphire",
-    value: 3.2,
-    rate: 0.075,
-    image: "/placeholder.svg?height=100&width=100",
-    color: "bg-blue-500",
+    name: "AuraGem #002",
+    type: "Ruby",
+    cut: "Princess Cut",
+    value: 2.6,
+    rate: 0.08,
+    color: "#E0115F",
+    thumbnail: "https://i.imgur.com/yKYwm5Y.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=2&color=%23ff87b5"
   },
   {
     id: 3,
-    name: "Emerald",
-    value: 1.8,
-    rate: 0.09,
-    image: "/placeholder.svg?height=100&width=100",
-    color: "bg-green-500",
+    name: "AuraGem #003",
+    type: "Ruby",
+    cut: "Emerald Cut",
+    value: 2.7,
+    rate: 0.08,
+    color: "#E0115F",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=4&color=%23ff87b5"
   },
   {
     id: 4,
-    name: "Diamond",
-    value: 5.0,
-    rate: 0.065,
-    image: "/placeholder.svg?height=100&width=100",
-    color: "bg-purple-300",
+    name: "AuraGem #004",
+    type: "Ruby",
+    cut: "Oval",
+    value: 2.8,
+    rate: 0.08,
+    color: "#E0115F",
+    thumbnail: "https://i.meee.com.tw/WTcDliG.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=6&color=%23ff87b5"
   },
   {
     id: 5,
-    name: "Yellow Sapphire",
-    value: 2.1,
-    rate: 0.085,
-    image: "/placeholder.svg?height=100&width=100",
-    color: "bg-yellow-400",
+    name: "AuraGem #005",
+    type: "Citrine",
+    cut: "Round Brilliant",
+    value: 1.8,
+    rate: 0.09,
+    color: "#E4A300",
+    thumbnail: "https://i.meee.com.tw/WTcDliG.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=0&color=%23d5b360"
   },
+  {
+    id: 6,
+    name: "AuraGem #006",
+    type: "Citrine",
+    cut: "Princess Cut",
+    value: 1.9,
+    rate: 0.09,
+    color: "#E4A301",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=2&color=%23d5b360"
+  },
+  {
+    id: 7,
+    name: "AuraGem #007",
+    type: "Citrine",
+    cut: "Emerald Cut",
+    value: 2.0,
+    rate: 0.09,
+    color: "#E4A302",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=4&color=%23d5b360"
+  },
+  {
+    id: 8,
+    name: "AuraGem #008",
+    type: "Citrine",
+    cut: "Oval",
+    value: 2.1,
+    rate: 0.09,
+    color: "#E4A303",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=6&color=%23d5b360"
+  },
+  {
+    id: 9,
+    name: "AuraGem #009",
+    type: "Sapphire",
+    cut: "Round Brilliant",
+    value: 3.0,
+    rate: 0.075,
+    color: "#0F52BA",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=0&color=%23a2f2b6"
+  },
+  {
+    id: 10,
+    name: "AuraGem #010",
+    type: "Sapphire",
+    cut: "Princess Cut",
+    value: 3.1,
+    rate: 0.075,
+    color: "#0F52BA",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=2&color=%23a2f2b6"
+  },
+  {
+    id: 11,
+    name: "AuraGem #011",
+    type: "Sapphire",
+    cut: "Emerald Cut",
+    value: 3.2,
+    rate: 0.075,
+    color: "#0F52BA",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=4&color=%23a2f2b6"
+  },
+  {
+    id: 12,
+    name: "AuraGem #012",
+    type: "Sapphire",
+    cut: "Oval",
+    value: 3.3,
+    rate: 0.075,
+    color: "#0F52BA",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=6&color=%23a2f2b6"
+  },
+  {
+    id: 13,
+    name: "AuraGem #013",
+    type: "Emerald",
+    cut: "Round Brilliant",
+    value: 2.2,
+    rate: 0.085,
+    color: "#50C878",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=0&color=%23769dff"
+  },
+  {
+    id: 14,
+    name: "AuraGem #014",
+    type: "Emerald",
+    cut: "Princess Cut",
+    value: 2.3,
+    rate: 0.085,
+    color: "#50C879",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=2&color=%23769dff"
+  },
+  {
+    id: 15,
+    name: "AuraGem #015",
+    type: "Emerald",
+    cut: "Emerald Cut",
+    value: 2.4,
+    rate: 0.085,
+    color: "#50C880",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=4&color=%23769dff"
+  },
+  {
+    id: 16,
+    name: "AuraGem #016",
+    type: "Emerald",
+    cut: "Oval",
+    value: 2.5,
+    rate: 0.085,
+    color: "#50C881",
+    thumbnail: "https://i.imgur.com/ojyX3Zi.png",
+    modelUrl: "https://gemfi-three-js.vercel.app/?modelIndex=6&color=%23769dff"
+  }
 ]
 
 export default function LoanReceipt({ gemId }: { gemId: number }) {
@@ -93,9 +229,13 @@ export default function LoanReceipt({ gemId }: { gemId: number }) {
             rotate: [0, 10, -10, 0],
           }}
           transition={{ duration: 2 }}
-          className={`w-32 h-32 rounded-lg ${gem.color} flex items-center justify-center mb-8`}
+          className="w-32 h-32"
         >
-          <span className="text-6xl">💎</span>
+          <iframe
+            src={gem.modelUrl}
+            className="w-full h-full border-0 rounded-lg"
+            title={`3D model of ${gem.name}`}
+          />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -128,11 +268,17 @@ export default function LoanReceipt({ gemId }: { gemId: number }) {
 
         <CardContent className="space-y-6">
           <div className="flex items-center space-x-4">
-            <div className={`w-16 h-16 rounded-lg ${gem.color} flex items-center justify-center`}>
-              <span className="text-2xl">💎</span>
+            <div className="w-32 h-32">
+              <iframe
+                src={gem.modelUrl}
+                className="w-full h-full border-0 rounded-lg"
+                title={`3D model of ${gem.name}`}
+              />
             </div>
             <div>
               <h3 className="font-medium text-white">{gem.name}</h3>
+              <p className="text-sm text-gray-300">Type: {gem.type}</p>
+              <p className="text-sm text-gray-300">Cut: {gem.cut}</p>
               <p className="text-sm text-gray-300">Valuation: {gem.value} ETH</p>
             </div>
           </div>
