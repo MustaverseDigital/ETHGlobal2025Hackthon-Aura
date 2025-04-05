@@ -1,0 +1,2 @@
+export const LENDING_PROTOCOL_ADDRESS = '0x20e64D450b8eF4d1E2c396d638569000a3273431' // Replace with actual deployed address
+export const ERC20_ADDRESS = '0xC39dC34F9d25FBc5A13A62b1Ec3BE3033F1b1598' 

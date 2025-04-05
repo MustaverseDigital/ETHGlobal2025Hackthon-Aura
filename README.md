@@ -1,2 +1,3 @@
-# ETHGlobal2025Hackthon-Aura
-# ETHGlobal2025Hackthon-Aura
+# Gem Lending Platform
+
+A decentralized P2P lending platform where NFTs serve as collateral for crypto loans. 💎🔄💰

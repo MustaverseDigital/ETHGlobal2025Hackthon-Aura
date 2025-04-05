@@ -5,7 +5,7 @@ import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiProvider, createConfig } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { http } from 'viem'
-import { mainnet, sepolia } from 'viem/chains'
+import { polygonAmoy  } from 'viem/chains'
 import { useState } from 'react'
 import { injected } from 'wagmi/connectors'
 
@@ -14,10 +14,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   const [wagmiConfig] = useState(() => {
     return createConfig({
-      chains: [mainnet, sepolia],
+      chains: [polygonAmoy],
       transports: {
-        [mainnet.id]: http(),
-        [sepolia.id]: http(),
+        [polygonAmoy.id]: http(),
       },
       connectors: [
         injected(),

@@ -267,14 +267,14 @@ export default function LoanReceipt({ gemId }: { gemId: number }) {
               <h3 className="font-medium text-white">{gem.name}</h3>
               <p className="text-sm text-gray-300">Type: {gem.type}</p>
               <p className="text-sm text-gray-300">Cut: {gem.cut}</p>
-              <p className="text-sm text-gray-300">Valuation: {gem.value} ETH</p>
+              <p className="text-sm text-gray-300">Valuation: {gem.value} USDC</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <p className="text-xs text-gray-400">Loan Amount</p>
-              <p className="text-lg font-medium text-white">{loanAmount} ETH</p>
+              <p className="text-lg font-medium text-white">{loanAmount} USDC</p>
             </div>
             <div className="space-y-1">
               <p className="text-xs text-gray-400">Annual Interest Rate</p>
