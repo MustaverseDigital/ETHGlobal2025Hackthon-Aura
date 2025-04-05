@@ -25,7 +25,7 @@ export default function QRCodeLogin() {
   const selfApp = new SelfAppBuilder({
     appName: "My Application",
     scope: "my-application-scope",
-    endpoint: "https://fad4-111-235-226-130.ngrok-free.app/api/verify", // need to fix based on ngrok https port
+    endpoint: "https://7520-111-235-226-130.ngrok-free.app/api/verify", // need to fix based on ngrok https port
     logoBase64: "https://brown-implicit-bass-794.mypinata.cloud/ipfs/bafkreigft4zc4yica3i6bmgjwzklpxjkwcetbjaqpcvlubuc7cv7r4a5nu",
     userId,
     disclosures: {
@@ -52,26 +52,20 @@ export default function QRCodeLogin() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col items-center">
-        <div className="w-64 h-64 bg-white p-4 rounded-lg mb-4 flex items-center justify-center">
+        <div className="w-[350px] h-[350px] bg-white p-4 rounded-lg mb-4 flex items-center justify-center">
           {/* Place QR code image here */}
-          <div>
-            <h1>Verify Your Identity</h1>
+          <div className="flex flex-col items-center gap-6">
             <SelfQRcodeWrapper
               selfApp={selfApp}
               type='deeplink'
               darkMode={true}
               onSuccess={() => {
-                console.log("Verification successful!");
-                  
-                // TODO Handle post-verification actions here
+                router.push("/inventory");
               }}
-              size={350}
+              size={300}
             />
           </div>
         </div>
-        <p className="text-sm text-white/80 text-center mb-4">
-          Please ensure your wallet app is updated to the latest version and DeFi features are enabled
-        </p>
       </CardContent>
       <CardFooter>
         <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={handleScan} disabled={isScanning}>
