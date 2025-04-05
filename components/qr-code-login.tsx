@@ -25,8 +25,8 @@ export default function QRCodeLogin() {
   const selfApp = new SelfAppBuilder({
     appName: "My Application",
     scope: "my-application-scope",
-    endpoint: "https://7520-111-235-226-130.ngrok-free.app/api/verify", // need to fix based on ngrok https port
-    logoBase64: "https://brown-implicit-bass-794.mypinata.cloud/ipfs/bafkreigft4zc4yica3i6bmgjwzklpxjkwcetbjaqpcvlubuc7cv7r4a5nu",
+    endpoint: "https://a69f-111-235-226-130.ngrok-free.app/api/verify", // need to fix based on ngrok https port
+    logoBase64: "https://brown-implicit-bass-794.mypinata.cloud/ipfs/bafkreide66mo5jobwmf523ijontxw2bo3446sf5xexwrxsmust4r3bd6ei",
     userId,
     disclosures: {
       minimumAge: 18,
@@ -60,7 +60,9 @@ export default function QRCodeLogin() {
               type='deeplink'
               darkMode={true}
               onSuccess={() => {
-                router.push("/inventory");
+                setTimeout(() => {
+                  router.push("/inventory");
+                }, 1500);
               }}
               size={300}
             />

@@ -20,6 +20,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { useLendingProtocol } from '@/hooks/use-lending-protocol'
+import { ERC20_ADDRESS } from '@/config/contracts'
+import { parseUnits } from 'viem'
+import { useWaitForTransactionReceipt } from 'wagmi'
+import { type Address } from 'viem'
+import { useToast } from '@/hooks/use-toast'
+import { type ReplacementReturnType } from 'viem'
 
 // 寶石數據
 const gems = [
@@ -28,7 +35,7 @@ const gems = [
     name: "AuraGem #001",
     type: "Ruby",
     cut: "Round Brilliant",
-    value: 2.5,
+    value: 100000,
     rate: 0.08,
     color: "#E0115F",
     thumbnail: "https://i.imgur.com/yKYwm5Y.png",
@@ -39,7 +46,7 @@ const gems = [
     name: "AuraGem #006",
     type: "Citrine",
     cut: "Princess Cut",
-    value: 1.9,
+    value: 101230,
     rate: 0.09,
     color: "#E4A301",
     thumbnail: "https://i.imgur.com/ojyX3Zi.png",
@@ -50,7 +57,7 @@ const gems = [
     name: "AuraGem #011",
     type: "Sapphire",
     cut: "Emerald Cut",
-    value: 3.2,
+    value: 320000,
     rate: 0.075,
     color: "#0F52BA",
     thumbnail: "https://i.imgur.com/ojyX3Zi.png",
@@ -61,7 +68,7 @@ const gems = [
     name: "AuraGem #016",
     type: "Emerald",
     cut: "Oval",
-    value: 2.5,
+    value: 250000,
     rate: 0.085,
     color: "#50C881",
     thumbnail: "https://i.imgur.com/ojyX3Zi.png",
@@ -71,10 +78,38 @@ const gems = [
 
 export default function GemInventory() {
   const router = useRouter()
+  const { toast } = useToast()
   const [selectedGem, setSelectedGem] = useState<(typeof gems)[0] | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [isPledging, setIsPledging] = useState(false)
   const [selectedType, setSelectedType] = useState<string | null>(null)
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined)
+
+  const { requestLoan, isWritePending } = useLendingProtocol()
+  const { isLoading: isWaitingForTx } = useWaitForTransactionReceipt({
+    hash: txHash,
+    onReplaced(response: ReplacementReturnType) {
+      if (response.reason === 'replaced') {
+        toast({
+          title: "Loan Request Successful",
+          description: "Your loan request has been processed successfully.",
+        })
+        router.push(`/receipt/${selectedGem?.id}`)
+        setIsPledging(false)
+        setIsConfirmOpen(false)
+        setTxHash(undefined)
+      } else {
+        toast({
+          title: "Transaction Failed",
+          description: "There was an error processing your loan request. Please try again.",
+          variant: "destructive",
+        })
+        setIsPledging(false)
+        setIsConfirmOpen(false)
+        setTxHash(undefined)
+      }
+    }
+  })
 
   // Group gems by type
   const gemTypes = Array.from(new Set(gems.map(gem => gem.type)))
@@ -86,16 +121,43 @@ export default function GemInventory() {
   // Filter gems by selected type
   const filteredGems = selectedType ? gems.filter(gem => gem.type === selectedType) : gems
 
-  const handlePledge = () => {
+  const handlePledge = async () => {
     if (!selectedGem) return
 
-    setIsPledging(true)
-    // 模擬抵押過程
-    setTimeout(() => {
+    try {
+      setIsPledging(true)
+
+      const hash = await requestLoan({
+        stablecoin: ERC20_ADDRESS as Address,
+        loanAmount: parseUnits(selectedGem.value.toString(), 6), // USDC uses 6 decimals
+        interestRate: BigInt(Math.floor(selectedGem.rate * 100)), // Convert to basis points
+        duration: BigInt(30 * 24 * 60 * 60), // 30 days in seconds
+        inquiryDuration: BigInt(7 * 24 * 60 * 60), // 7 days in seconds
+        collateralAssets: [{
+          assetType: 1, // ERC721
+          assetAddress: '0x4fad89714c46D3304D790182943EF92492a4b161' as Address,
+          tokenId: BigInt(selectedGem.id),
+          amount: BigInt(1)
+        }],
+        onSuccess: (hash) => {
+          setTxHash(hash)
+          toast({
+            title: "Transaction Submitted",
+            description: "Please wait while your transaction is being processed...",
+          })
+        }
+      })
+
+    } catch (error) {
+      console.error('Error pledging gem:', error)
+      toast({
+        title: "Error",
+        description: "There was an error submitting your transaction. Please try again.",
+        variant: "destructive",
+      })
       setIsPledging(false)
       setIsConfirmOpen(false)
-      router.push(`/receipt/${selectedGem.id}`)
-    }, 2000)
+    }
   }
 
   return (
@@ -169,7 +231,7 @@ export default function GemInventory() {
                   </div>
                   <CardDescription className="text-emerald-300">
                     <div className="flex justify-between items-center">
-                      <span>Value: {gem.value} ETH</span>
+                      <span>Value: {gem.value} USDC</span>
                     </div>
                   </CardDescription>
                 </CardHeader>
@@ -237,7 +299,7 @@ export default function GemInventory() {
               <div className="grid grid-cols-2 gap-4 bg-black/20 p-4 rounded-lg">
                 <div>
                   <p className="text-sm text-gray-400">Asset Value</p>
-                  <p className="text-lg font-medium text-white">{selectedGem.value} ETH</p>
+                  <p className="text-lg font-medium text-white">{selectedGem.value} USDC</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Interest Rate</p>
@@ -249,7 +311,7 @@ export default function GemInventory() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Max Loan Amount</p>
-                  <p className="text-lg font-medium text-emerald-300">{(selectedGem.value * 0.7).toFixed(2)} ETH</p>
+                  <p className="text-lg font-medium text-emerald-300">{(selectedGem.value * 0.7).toFixed(2)} USDC</p>
                 </div>
               </div>
 
