@@ -4,7 +4,7 @@ import { SelfBackendVerifier, countries } from '@selfxyz/core';
 const selfBackendVerifier = new SelfBackendVerifier(
   //'https://forno.celo.org',
   'my-application-scope',
-  'https://c85b-111-235-226-130.ngrok-free.app/api/verify'
+  'https://fad4-111-235-226-130.ngrok-free.app/api/verify'
 );
 
 export async function POST(req: Request) {
