@@ -10,7 +10,7 @@ To enhance efficiency and reduce gas costs, our system integrates off-chain perm
 
 ![diamond real-world assets](https://imgur.com/bHRjXGu.png)
 
-![notes](https://imgur.com/a/rK4gfd9.png)
+![notes](https://imgur.com/mtQlkJZ.png)
 
 ## Features
 
