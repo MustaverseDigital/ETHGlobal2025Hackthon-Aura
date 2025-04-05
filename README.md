@@ -8,6 +8,10 @@ Our project addresses the liquidity challenges of diamond real-world assets by f
 
 To enhance efficiency and reduce gas costs, our system integrates off-chain permit functionalities for ERC20, ERC721, and ERC1155 tokens, allowing seamless authorization via digital signatures without requiring multiple on-chain approval transactions. Furthermore, to meet legal and regulatory requirements for real-world assets (RWA), we utilize Self Protocol to verify borrower nationality. In addition, the protocol employs an AI Agent to provide real-time valuation of diamond assets, further enhancing transparency and enabling informed decision-making.
 
+![diamond real-world assets](https://imgur.com/bHRjXGu)
+
+![notes]([URL_or_relative_path](https://imgur.com/a/rK4gfd9))
+
 ## Features
 
 - **Fractionalized Diamond Assets:**  
